@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Warehouse Inventory</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <h1>Warehouse Inventory List</h1>
+
+    {% if items %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Item ID</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Location</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                    <tr>
+                        <td>
+				<a href="{% url 'item_detail' item.pk %}">{{ item.item_id }}</a>
+			</td>
+                        <td>{{ item.get_category_display }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ item.location }}</td>
+                        <td>{{ item.last_updated|date:"Y-m-d P" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No items found in the inventory.</p>
+    {% endif %}
+
+</body>
+</html>
