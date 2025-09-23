@@ -11,9 +11,10 @@
     </style>
 </head>
 <body>
-
     <div class="detail-card">
         <h1>Item Details: {{ item.item_id }}</h1>
+	<p><a href="{% url 'edit_item' item.pk %}">Edit This Item</a></p>
+	<a href="{% url 'delete_item' item.pk %}" style="color: red;">Delete This Item</a>
         <p><strong>Category:</strong> {{ item.get_category_display }}</p>
         <p><strong>Description:</strong> {{ item.description }}</p>
         <p><strong>Vendor:</strong> {{ item.vendor }}</p>
