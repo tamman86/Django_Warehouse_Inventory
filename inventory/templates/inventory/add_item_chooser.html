@@ -1,29 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Select Item Type</title>
-    <style>
-        body { font-family: sans-serif; margin: 2em; }
-        ul { list-style: none; padding: 0; }
-        li { margin: 0.5em 0; }
-        a { color: #005A9C; text-decoration: none; font-size: 1.2em; }
-        a:hover { text-decoration: underline; }
-    </style>
-</head>
-<body>
+{% extends 'base.html' %}
 
+{% block title %}Select Item Type{% endblock %}
+
+{% block content %}
     <h1>Select a Category to Add</h1>
-
-    <ul>
+    <div class="list-group mt-3">
         {% for value, display_name in categories %}
-            <li>
-                <a href="{% url 'add_item' value %}">{{ display_name }}</a>
-            </li>
+            <a href="{% url 'add_item' value %}" class="list-group-item list-group-item-action">
+                {{ display_name }}
+            </a>
         {% endfor %}
-    </ul>
-
-    <p><a href="{% url 'item_list' %}">&laquo; Back to full list</a></p>
-
-</body>
-</html>
+    </div>
+{% endblock %}

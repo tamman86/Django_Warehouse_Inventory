@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import BaseItem
+from django.db.models import Q
 from .forms import (
     PumpForm, ValveForm, FilterForm, MixTankForm, CommandCenterForm, MiscForm
 )
@@ -14,8 +15,24 @@ FORM_MAP = {
 }
 
 def item_list(request):
-    # Grab all items in database and prepare for display
-    items = BaseItem.objects.all().order_by('category', 'item_id')
+    # Get the search query from the URL's 'q' parameter
+    query = request.GET.get('q')
+
+    # Start with all items
+    items = BaseItem.objects.all()
+
+    # If a query was provided, filter the items
+    if query:
+        items = items.filter(
+            Q(item_id__icontains=query) |
+            Q(description__icontains=query) |
+            Q(location__icontains=query) |
+            Q(vendor__icontains=query)
+        ).order_by('category', 'item_id')
+    else:
+        # If no query, just order the full list
+        items = items.order_by('category', 'item_id')
+
     context = {
         'items': items
     }

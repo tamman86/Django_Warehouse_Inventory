@@ -1,50 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ item.item_id }} Details</title>
-    <style>
-        body { font-family: sans-serif; margin: 2em; }
-        .detail-card { border: 1px solid #ccc; padding: 1em; max-width: 600px; }
-        .detail-card h1 { margin-top: 0; }
-        a { color: #005A9C; }
-    </style>
-</head>
-<body>
-    <div class="detail-card">
-        <h1>Item Details: {{ item.item_id }}</h1>
-	<p><a href="{% url 'edit_item' item.pk %}">Edit This Item</a></p>
-	<a href="{% url 'delete_item' item.pk %}" style="color: red;">Delete This Item</a>
-        <p><strong>Category:</strong> {{ item.get_category_display }}</p>
-        <p><strong>Description:</strong> {{ item.description }}</p>
-        <p><strong>Vendor:</strong> {{ item.vendor }}</p>
-        <p><strong>Rating:</strong> {{ item.rating }}</p>
-        <p><strong>Location:</strong> {{ item.location }}</p>
+{% extends 'base.html' %}
 
-        <hr>
-        <h2>Specific Details</h2>
+{% block title %}{{ item.item_id }} Details{% endblock %}
 
-        {% if item.category == "Pump" %}
-            <p><strong>Speed:</strong> {{ item.pump.speed }}</p>
-            <p><strong>Inlet:</strong> {{ item.pump.inlet }}</p>
-            <p><strong>Outlet:</strong> {{ item.pump.outlet }}</p>
-            <p><strong>Material:</strong> {{ item.pump.moc }}</p>
-            <p><strong>Power:</strong> {{ item.pump.power }}</p>
-        {% elif item.category == "Valve" %}
-            <p><strong>Material:</strong> {{ item.valve.moc }}</p>
-            <p><strong>Size:</strong> {{ item.valve.size }}</p>
-            <p><strong>Valve Type:</strong> {{ item.valve.valve_type }}</p>
-        {% elif item.category == "Filter" %}
-            <p><strong>Inlet:</strong> {{ item.filter.inlet }}</p>
-            <p><strong>Outlet:</strong> {{ item.filter.outlet }}</p>
-            <p><strong>Material:</strong> {{ item.filter.moc }}</p>
-            <p><strong>Filter Type:</strong> {{ item.filter.filter_type }}</p>
-        {% else %}
-             <p>This item has no category-specific details.</p>
-        {% endif %}
+{% block content %}
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Item Details: {{ item.item_id }}</h4>
+            <div>
+                <a href="{% url 'edit_item' item.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                <a href="{% url 'delete_item' item.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <p><strong>Category:</strong> {{ item.get_category_display }}</p>
+            <p><strong>Description:</strong> {{ item.description }}</p>
+            <p><strong>Vendor:</strong> {{ item.vendor }}</p>
+            <p><strong>Rating:</strong> {{ item.rating }}</p>
+            <p><strong>Location:</strong> {{ item.location }}</p>
+
+            <hr>
+            <h5>Specific Details</h5>
+
+            {% if item.category == "Pump" %}
+                <p><strong>Speed:</strong> {{ item.pump.speed }}</p>
+                <p><strong>Inlet:</strong> {{ item.pump.inlet }}</p>
+                <p><strong>Outlet:</strong> {{ item.pump.outlet }}</p>
+                <p><strong>Material:</strong> {{ item.pump.moc }}</p>
+                <p><strong>Power:</strong> {{ item.pump.power }}</p>
+            {% elif item.category == "Valve" %}
+                <p><strong>Material:</strong> {{ item.valve.moc }}</p>
+                <p><strong>Size:</strong> {{ item.valve.size }}</p>
+                <p><strong>Valve Type:</strong> {{ item.valve.valve_type }}</p>
+            {% elif item.category == "Filter" %}
+                <p><strong>Inlet:</strong> {{ item.filter.inlet }}</p>
+                <p><strong>Outlet:</strong> {{ item.filter.outlet }}</p>
+                <p><strong>Material:</strong> {{ item.filter.moc }}</p>
+                <p><strong>Filter Type:</strong> {{ item.filter.filter_type }}</p>
+            {% else %}
+                 <p>This item has no category-specific details.</p>
+            {% endif %}
+        </div>
+        <div class="card-footer">
+             <a href="{% url 'item_list' %}">&laquo; Back to full list</a>
+        </div>
     </div>
-
-    <p><a href="{% url 'item_list' %}">&laquo; Back to full list</a></p>
-
-</body>
-</html>
+{% endblock %}
