@@ -8,4 +8,5 @@ urlpatterns = [
     path('item/<int:pk>/delete/', views.delete_item, name='delete_item'),
     path('add/', views.add_item_chooser, name='add_item_chooser'),
     path('add/<str:category>/', views.add_item, name='add_item'),
+    path('history/', views.log_history, name='log_history'),
 ]

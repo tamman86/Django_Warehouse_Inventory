@@ -68,3 +68,15 @@ class Misc(BaseItem):
     moc = models.CharField(max_length=100, blank=True, verbose_name="Material of Construction")
     power = models.CharField(max_length=50, blank=True)
     quantity = models.CharField(max_length=50, blank=True)
+
+class LogEntry(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
+    action = models.CharField(max_length=50)
+    item_id_str = models.CharField(max_length=100, verbose_name="Item ID")
+    details = models.TextField()
+
+    def __str__(self):
+        return f"{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')} - {self.action} - {self.item_id_str}"
+
+    class Meta:
+        ordering = ['-timestamp']  # Show the most recent logs first
