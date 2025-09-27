@@ -74,6 +74,9 @@ def add_item(request, category):
             # Set the category from the URL
             new_item.category = category
 
+            # Save user
+            new_item.updated_by = request.user
+
             # Save the object to database
             new_item.save()
 
@@ -109,6 +112,7 @@ def edit_item(request, pk):
         # Pass the specific child_instance to the form
         form = FormClass(request.POST, instance=child_instance)
         if form.is_valid():
+            form.instance.updated_by = request.user
             form.save()
             return redirect('item_detail', pk=base_item.pk)
     else:
@@ -127,6 +131,12 @@ def delete_item(request, pk):
 
     # When user confirms deletion
     if request.method == 'POST':
+        LogEntry.objects.create(
+            user=request.user,
+            action="Deleted",
+            item_id_str=item.item_id,
+            details=f"Item from category '{item.get_category_display()}' was deleted."
+        )
         item.delete()
         return redirect('item_list')
 

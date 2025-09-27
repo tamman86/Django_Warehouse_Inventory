@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class BaseItem(models.Model):
     # List of category fields
@@ -71,9 +72,12 @@ class Misc(BaseItem):
 
 class LogEntry(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='inventory_log_entries')
     action = models.CharField(max_length=50)
     item_id_str = models.CharField(max_length=100, verbose_name="Item ID")
-    details = models.TextField()
+    details = models.TextField(blank=True)
+
+
 
     def __str__(self):
         return f"{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')} - {self.action} - {self.item_id_str}"

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Change History{% endblock %}
+
+{% block content %}
+    <h1>Inventory Change History</h1>
+
+    <table class="table table-striped table-sm mt-4">
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>User</th><th>Action</th>
+                <th>Item ID</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+                <tr>
+                    <td>{{ log.timestamp|date:"Y-m-d P" }}</td>
+                    <td>{{ log.user.username|default:"N/A" }}</td>
+                    <td>{{ log.action }}</td>
+                    <td>{{ log.item_id_str }}</td>
+                    <td>{{ log.details }}</td>
+                </tr>
+            {% empty %}
+                {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

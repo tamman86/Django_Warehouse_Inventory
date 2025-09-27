@@ -6,6 +6,7 @@ class InventoryConfig(AppConfig):
     name = 'inventory'
 
     def ready(self):
+        from django.db.models.signals import post_save, pre_save
         from . import signals
         from .models import Pump, Valve, Filter, MixTank, CommandCenter, Misc
 
@@ -13,5 +14,5 @@ class InventoryConfig(AppConfig):
 
         # Loop through all our specific item models and connect the signals
         for model in ITEM_MODELS:
+            pre_save.connect(signals.store_old_instance_on_save, sender=model)
             post_save.connect(signals.log_item_change, sender=model)
-            post_delete.connect(signals.log_item_deletion, sender=model)
