@@ -5,7 +5,7 @@ class PumpForm(forms.ModelForm):
     class Meta:
         model = Pump
         fields = [
-            'item_id', 'description', 'vendor', 'rating', 'location',
+            'item_id', 'description', 'vendor', 'rating', 'location', 'status',
             'speed', 'inlet', 'outlet', 'moc', 'power'
         ]
         widgets = {
@@ -16,7 +16,7 @@ class ValveForm(forms.ModelForm):
     class Meta:
         model = Valve
         fields = [
-            'item_id', 'description', 'vendor', 'rating', 'location',
+            'item_id', 'description', 'vendor', 'rating', 'location', 'status',
             'moc', 'size', 'valve_type'
         ]
         widgets = {
@@ -27,7 +27,7 @@ class FilterForm(forms.ModelForm):
     class Meta:
         model = Filter
         fields = [
-            'item_id', 'description', 'vendor', 'rating', 'location',
+            'item_id', 'description', 'vendor', 'rating', 'location', 'status',
             'inlet', 'outlet', 'moc', 'filter_type'
         ]
         widgets = {
@@ -38,7 +38,7 @@ class MixTankForm(forms.ModelForm):
     class Meta:
         model = MixTank
         fields = [
-            'item_id', 'description', 'vendor', 'rating', 'location',
+            'item_id', 'description', 'vendor', 'rating', 'location', 'status',
             'inlet', 'outlet', 'moc', 'power'
         ]
         widgets = {
@@ -48,7 +48,7 @@ class MixTankForm(forms.ModelForm):
 class CommandCenterForm(forms.ModelForm):
     class Meta:
         model = CommandCenter
-        fields = ['item_id', 'description', 'location']
+        fields = ['item_id', 'description', 'location', 'status',]
         widgets = {
             'category': forms.HiddenInput(),
         }
@@ -57,7 +57,7 @@ class MiscForm(forms.ModelForm):
     class Meta:
         model = Misc
         fields = [
-            'item_id', 'description', 'vendor', 'rating', 'location',
+            'item_id', 'description', 'vendor', 'rating', 'location', 'status',
             'speed', 'inlet', 'outlet', 'moc', 'power', 'quantity'
         ]
         widgets = {

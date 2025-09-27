@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import logout
-from .models import BaseItem, LogEntry
+from .models import BaseItem, LogEntry, Status
 from django.db.models import Q
 from .forms import (
     PumpForm, ValveForm, FilterForm, MixTankForm, CommandCenterForm, MiscForm
@@ -158,3 +158,28 @@ def logout_view(request):
     logout(request)
     messages.success(request, "You have been successfully logged out.")
     return redirect('item_list')
+
+@login_required
+def manage_statuses(request):
+    if request.method == 'POST':
+        if 'delete_status' in request.POST:
+            status_id = request.POST.get('delete_status')
+            status_to_delete = get_object_or_404(Status, id=status_id)
+            try:
+                status_to_delete.delete()
+                messages.success(request, f"Status '{status_to_delete.name}' deleted.")
+            except Exception as e:
+                messages.error(request, f"Cannot delete status '{status_to_delete.name}' because it is in use.")
+        else:
+            new_status_name = request.POST.get('name')
+            if new_status_name:
+                status, created = Status.objects.get_or_create(name=new_status_name)
+                if created:
+                    messages.success(request, f"Status '{status.name}' added.")
+                else:
+                    messages.warning(request, f"Status '{status.name}' already exists.")
+        return redirect('manage_statuses')
+
+    statuses = Status.objects.all().order_by('name')
+    context = {'statuses': statuses}
+    return render(request, 'inventory/manage_statuses.html', context)

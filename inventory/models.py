@@ -1,6 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+class Status(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "Statuses"
+
 class BaseItem(models.Model):
     # List of category fields
     CATEGORY_CHOICES = [
@@ -18,6 +27,7 @@ class BaseItem(models.Model):
     vendor = models.CharField(max_length=100, blank=True)
     rating = models.CharField(max_length=50, blank=True)
     location = models.CharField(max_length=100, blank=True)
+    status = models.ForeignKey(Status, on_delete=models.PROTECT, null=True, blank=True)
     last_updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
