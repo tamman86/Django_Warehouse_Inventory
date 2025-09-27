@@ -1,4 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.contrib.auth import logout
 from .models import BaseItem, LogEntry
 from django.db.models import Q
 from .forms import (
@@ -46,6 +49,7 @@ def item_detail(request, pk):
     }
     return render(request, 'inventory/item_detail.html', context)
 
+@login_required
 def add_item_chooser(request):
     # We get the category choices directly from our BaseItem model
     category_choices = BaseItem.CATEGORY_CHOICES
@@ -54,6 +58,7 @@ def add_item_chooser(request):
     }
     return render(request, 'inventory/add_item_chooser.html', context)
 
+@login_required
 def add_item(request, category):
     FormClass = FORM_MAP.get(category.lower().replace(' ', ''))
 
@@ -83,7 +88,7 @@ def add_item(request, category):
     }
     return render(request, 'inventory/add_item.html', context)
 
-
+@login_required
 def edit_item(request, pk):
     # Get the parent BaseItem object first
     base_item = get_object_or_404(BaseItem, pk=pk)
@@ -116,7 +121,7 @@ def edit_item(request, pk):
     }
     return render(request, 'inventory/add_item.html', context)
 
-
+@login_required
 def delete_item(request, pk):
     item = get_object_or_404(BaseItem, pk=pk)
 
@@ -130,9 +135,16 @@ def delete_item(request, pk):
     }
     return render(request, 'inventory/item_confirm_delete.html', context)
 
+@login_required
 def log_history(request):
     logs = LogEntry.objects.all()
     context = {
         'logs': logs
     }
     return render(request, 'inventory/log_history.html', context)
+
+@login_required
+def logout_view(request):
+    logout(request)
+    messages.success(request, "You have been successfully logged out.")
+    return redirect('item_list')
