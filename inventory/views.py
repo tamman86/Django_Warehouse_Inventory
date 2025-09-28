@@ -2,10 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import logout
-from .models import BaseItem, LogEntry, Status
+from .models import BaseItem, LogEntry, Status, RepairLog
 from django.db.models import Q
 from .forms import (
-    PumpForm, ValveForm, FilterForm, MixTankForm, CommandCenterForm, MiscForm
+    RepairLogForm, PumpForm, ValveForm, FilterForm, MixTankForm, CommandCenterForm, MiscForm
 )
 
 FORM_MAP = {
@@ -50,8 +50,11 @@ def item_list(request):
 def item_detail(request, pk):
     # Takes a single item by its primary key and sends it to a detail template
     item = get_object_or_404(BaseItem, pk=pk)
+    repair_logs = item.repairs.all()
+
     context = {
-        'item': item
+        'item': item,
+        'repair_logs': repair_logs,
     }
     return render(request, 'inventory/item_detail.html', context)
 
@@ -97,39 +100,67 @@ def add_item(request, category):
     }
     return render(request, 'inventory/add_item.html', context)
 
+
 @login_required
 def edit_item(request, pk):
-    # Get the parent BaseItem object first
     base_item = get_object_or_404(BaseItem, pk=pk)
-
-    # Determine the category and find the correct Form class
     category_slug = base_item.category.lower().replace(' ', '')
-    FormClass = FORM_MAP.get(category_slug)
-
-    if FormClass is None:
-        return redirect('item_list')
+    ItemFormClass = FORM_MAP.get(category_slug)
 
     try:
         child_instance = getattr(base_item, category_slug)
     except AttributeError:
         child_instance = base_item
 
+    active_repair = child_instance.repairs.filter(is_active=True).first()
+
     if request.method == 'POST':
-        # Pass the specific child_instance to the form
-        form = FormClass(request.POST, instance=child_instance)
-        if form.is_valid():
-            form.instance.updated_by = request.user
-            form.save()
-            return redirect('item_detail', pk=base_item.pk)
+        item_form = ItemFormClass(request.POST, request.FILES, instance=child_instance)
+        repair_form = RepairLogForm(request.POST, request.FILES, prefix='repair', instance=active_repair)
+
+        if item_form.is_valid():
+            new_status = item_form.cleaned_data.get('status')
+
+            if new_status and new_status.name == 'Repair':
+                if repair_form.is_valid():
+                    item_form.instance.updated_by = request.user
+                    updated_item = item_form.save()
+
+                    repair_log = repair_form.save(commit=False)
+                    repair_log.item = updated_item
+                    repair_log.is_active = True
+                    repair_log.save()
+
+                    log_action = "Repair Updated"
+                    if not active_repair:  # If there was no active repair before, this is a new one
+                        log_action = "Repair Started"
+
+                    LogEntry.objects.create(
+                        user=request.user,
+                        action=log_action,
+                        item_id_str=updated_item.item_id,
+                        details=f"Company: {repair_log.repair_company}, Cost: ${repair_log.cost or 'N/A'}"
+                    )
+
+                    messages.success(request, f"Item '{updated_item.item_id}' updated and repair log saved.")
+                    return redirect('item_detail', pk=base_item.pk)
+
+            else:
+                item_form.instance.updated_by = request.user
+                item_form.save()
+                messages.success(request, f"Item '{item_form.instance.item_id}' was updated successfully.")
+                return redirect('item_detail', pk=base_item.pk)
+
     else:
-        # Pass the specific child_instance to the form
-        form = FormClass(instance=child_instance)
+        item_form = ItemFormClass(instance=child_instance)
+        repair_form = RepairLogForm(prefix='repair', instance=active_repair)
 
     context = {
-        'form': form,
-        'category': base_item.category
+        'form': item_form,
+        'repair_form': repair_form,
+        'item': base_item,
     }
-    return render(request, 'inventory/add_item.html', context)
+    return render(request, 'inventory/edit_item.html', context)
 
 @login_required
 def delete_item(request, pk):
@@ -189,3 +220,33 @@ def manage_statuses(request):
     statuses = Status.objects.all().order_by('name')
     context = {'statuses': statuses}
     return render(request, 'inventory/manage_statuses.html', context)
+
+
+@login_required
+def complete_repair(request, pk):
+    repair_log = get_object_or_404(RepairLog, pk=pk)
+    item = repair_log.item
+
+    if request.method == 'POST':
+        repair_log.is_active = False
+        repair_log.save()
+
+        LogEntry.objects.create(
+            user=request.user,
+            action="Repair Completed",
+            item_id_str=item.item_id,
+            details=f"Repair by {repair_log.repair_company} marked as complete."
+        )
+
+        try:
+            warehouse_status = Status.objects.get(name="Warehouse")
+            item.status = warehouse_status
+            item.updated_by = request.user
+            item.save()
+            messages.success(request, f"Repair for {item.item_id} has been marked as complete.")
+        except Status.DoesNotExist:
+            messages.error(request, "CRITICAL: The 'Warehouse' status does not exist. Please create it.")
+
+        return redirect('item_detail', pk=item.pk)
+
+    return redirect('item_detail', pk=item.pk)

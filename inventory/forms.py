@@ -1,5 +1,5 @@
 from django import forms
-from .models import Pump, Valve, Filter, MixTank, CommandCenter, Misc
+from .models import RepairLog, Pump, Valve, Filter, MixTank, CommandCenter, Misc
 
 class PumpForm(forms.ModelForm):
     class Meta:
@@ -62,4 +62,22 @@ class MiscForm(forms.ModelForm):
         ]
         widgets = {
             'category': forms.HiddenInput(),
+        }
+
+class RepairLogForm(forms.ModelForm):
+    class Meta:
+        model = RepairLog
+        fields = [
+            'repair_company', 'contact_name', 'contact_number', 'contact_email', 'start_date',
+            'expected_return_date', 'description', 'cost', 'document'
+        ]
+
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'expected_return_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+        labels = {
+            'description': 'Repair Description',
+            'cost': 'Estimated/Final Cost',
         }

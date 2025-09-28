@@ -87,10 +87,34 @@ class LogEntry(models.Model):
     item_id_str = models.CharField(max_length=100, verbose_name="Item ID")
     details = models.TextField(blank=True)
 
-
-
     def __str__(self):
         return f"{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')} - {self.action} - {self.item_id_str}"
 
     class Meta:
         ordering = ['-timestamp']  # Show the most recent logs first
+
+
+class RepairLog(models.Model):
+    item = models.ForeignKey(BaseItem, on_delete=models.CASCADE, related_name='repairs')
+
+    # Repair Detail Fields
+    repair_company = models.CharField(max_length=200)
+    contact_name = models.CharField(max_length=200, blank=True)
+    contact_number = models.CharField(max_length=50, blank=True)
+    contact_email = models.EmailField(max_length=254, blank=True)
+    start_date = models.DateField()
+    expected_return_date = models.DateField(null=True, blank=True)
+    description = models.TextField()
+    cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,
+                               verbose_name="Estimated/Final Cost")
+    document = models.FileField(upload_to='repair_documents/', blank=True, null=True)
+
+    # Status of the repair itself
+    is_active = models.BooleanField(default=True, help_text="Is the repair currently ongoing?")
+
+    def __str__(self):
+        status = "Active" if self.is_active else "Complete"
+        return f"Repair for {self.item.item_id} ({status})"
+
+    class Meta:
+        ordering = ['-start_date']
