@@ -69,7 +69,8 @@ class RepairLogForm(forms.ModelForm):
         model = RepairLog
         fields = [
             'repair_company', 'contact_name', 'contact_number', 'contact_email', 'start_date',
-            'expected_return_date', 'description', 'cost', 'document'
+            'expected_return_date', 'description', 'cost',
+            'document1', 'document2', 'document3', 'document4', 'document5'
         ]
 
         widgets = {

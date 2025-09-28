@@ -48,7 +48,13 @@
     {% for repair in repair_logs %}
         <div class="card mb-3">
             <div class="card-header d-flex justify-content-between align-items-center {% if repair.is_active %}bg-warning{% else %}bg-light text-muted{% endif %}">
-                <span>Repair Started: {{ repair.start_date }}</span>
+                <span>
+                    {% if repair.is_active %}
+                        Repair Started: {{ repair.start_date }}
+                    {% else %}
+                        Repair Started: {{ repair.start_date }} to Repair Completed: {{ repair.end_date|default:"N/A" }}
+                    {% endif %}
+                </span>
                 <strong>{% if repair.is_active %}Status: ACTIVE{% else %}Status: Complete{% endif %}</strong>
             </div>
             <div class="card-body">
@@ -56,6 +62,51 @@
                 <p><strong>Contact:</strong> {{ repair.contact_name }} ({{ repair.contact_number }}, {{ repair.contact_email }})</p>
                 <p><strong>Description:</strong> {{ repair.description }}</p>
                 <p><strong>Cost:</strong> ${{ repair.cost|default:"N/A" }}</p>
+                
+		<p><strong>Documents:</strong></p>
+                <ul class="list-unstyled ms-3">
+                    <li>
+                        Document 1:
+                        {% if repair.document1 %}
+                            <a href="{{ repair.document1.url }}" target="_blank">View Document</a>
+                        {% else %}
+                            No document uploaded.
+                        {% endif %}
+                    </li>
+                    <li>
+                        Document 2:
+                        {% if repair.document2 %}
+                            <a href="{{ repair.document2.url }}" target="_blank">View Document</a>
+                        {% else %}
+                            No document uploaded.
+                        {% endif %}
+                    </li>
+                    <li>
+                        Document 3:
+                        {% if repair.document3 %}
+                            <a href="{{ repair.document3.url }}" target="_blank">View Document</a>
+                        {% else %}
+                            No document uploaded.
+                        {% endif %}
+                    </li>
+                    <li>
+                        Document 4:
+                        {% if repair.document4 %}
+                            <a href="{{ repair.document4.url }}" target="_blank">View Document</a>
+                        {% else %}
+                            No document uploaded.
+                        {% endif %}
+                    </li>
+                    <li>
+                        Document 5:
+                        {% if repair.document5 %}
+                            <a href="{{ repair.document5.url }}" target="_blank">View Document</a>
+                        {% else %}
+                            No document uploaded.
+                        {% endif %}
+                    </li>
+                </ul>
+
                 <p><strong>Expected Return:</strong> {{ repair.expected_return_date|default:"N/A" }}</p>
 
                 {% if repair.is_active %}

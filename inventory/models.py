@@ -104,10 +104,15 @@ class RepairLog(models.Model):
     contact_email = models.EmailField(max_length=254, blank=True)
     start_date = models.DateField()
     expected_return_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True, verbose_name="Repair End Date")
     description = models.TextField()
     cost = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,
                                verbose_name="Estimated/Final Cost")
-    document = models.FileField(upload_to='repair_documents/', blank=True, null=True)
+    document1 = models.FileField(upload_to='repair_documents/', blank=True, null=True, verbose_name="Document 1")
+    document2 = models.FileField(upload_to='repair_documents/', blank=True, null=True, verbose_name="Document 2")
+    document3 = models.FileField(upload_to='repair_documents/', blank=True, null=True, verbose_name="Document 3")
+    document4 = models.FileField(upload_to='repair_documents/', blank=True, null=True, verbose_name="Document 4")
+    document5 = models.FileField(upload_to='repair_documents/', blank=True, null=True, verbose_name="Document 5")
 
     # Status of the repair itself
     is_active = models.BooleanField(default=True, help_text="Is the repair currently ongoing?")

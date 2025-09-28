@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from .models import BaseItem, LogEntry, Status, RepairLog
 from django.db.models import Q
+from django.utils import timezone
 from .forms import (
     RepairLogForm, PumpForm, ValveForm, FilterForm, MixTankForm, CommandCenterForm, MiscForm
 )
@@ -229,6 +230,7 @@ def complete_repair(request, pk):
 
     if request.method == 'POST':
         repair_log.is_active = False
+        repair_log.end_date = timezone.now().date()
         repair_log.save()
 
         LogEntry.objects.create(
