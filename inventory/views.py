@@ -20,9 +20,15 @@ FORM_MAP = {
 def item_list(request):
     # Get the search query from the URL's 'q' parameter
     query = request.GET.get('q')
+    status_filter = request.GET.get('status')
 
     # Start with all items
     items = BaseItem.objects.all()
+    statuses = Status.objects.all().order_by('name')
+
+    # Filter by status if selected
+    if status_filter:
+        items = items.filter(status__in=status_filter)
 
     # If a query was provided, filter the items
     if query:
@@ -31,13 +37,13 @@ def item_list(request):
             Q(description__icontains=query) |
             Q(location__icontains=query) |
             Q(vendor__icontains=query)
-        ).order_by('category', 'item_id')
-    else:
-        # If no query, just order the full list
-        items = items.order_by('category', 'item_id')
+        )
+
+    items = items.order_by('category', 'item_id')
 
     context = {
-        'items': items
+        'items': items,
+        'statuses': statuses,
     }
     return render(request, 'inventory/item_list.html', context)
 
