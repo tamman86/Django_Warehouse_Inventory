@@ -50,6 +50,10 @@ def item_list(request):
         'items': items,
         'statuses': statuses,
     }
+
+    if request.GET.get('format') == 'print':
+        return render(request, 'inventory/item_list_print.html', context)
+
     return render(request, 'inventory/item_list.html', context)
 
 def item_detail(request, pk):

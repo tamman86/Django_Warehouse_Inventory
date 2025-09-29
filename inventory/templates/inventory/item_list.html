@@ -5,12 +5,13 @@
 {% block content %}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Warehouse Inventory List</h1>
-        <div> 
+        <div>
+            <button id="print-button" class="btn btn-info">Print List</button>
             {% if perms.inventory.add_status %}
-                <a href="{% url 'manage_statuses' %}" class="btn btn-secondary">Manage Projects</a>
+            <a href="{% url 'manage_statuses' %}" class="btn btn-secondary">Manage Projects</a>
             {% endif %}
             {% if perms.inventory.add_baseitem %}
-                <a href="{% url 'add_item_chooser' %}" class="btn btn-primary">Add New Item</a>
+            <a href="{% url 'add_item_chooser' %}" class="btn btn-primary">Add New Item</a>
             {% endif %}
         </div>
     </div>
@@ -25,7 +26,7 @@
 
     <form method="get" class="mb-4">
         <div class="input-group">
-            <input type="text" class="form-control" name="q" placeholder="Search by ID, description, location, or vendor..." value="{{ request.GET.q }}">
+            <input type="text" class="form-control" name="q" placeholder="Search by ID, description, category, status, or vendor..." value="{{ request.GET.q }}">
             <button class="btn btn-outline-secondary" type="submit">Search</button>
         </div>
     </form>
@@ -38,7 +39,8 @@
                     <th>Category</th>
                     <th>Description</th>
                     <th>Location</th>
-                    <th>Status</th> <th>Last Updated</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
                 </tr>
             </thead>
             <tbody>
@@ -50,7 +52,8 @@
                         <td>{{ item.get_category_display }}</td>
                         <td>{{ item.description }}</td>
                         <td>{{ item.location }}</td>
-                        <td>{{ item.status.name|default:"-" }}</td> <td>{{ item.last_updated|date:"Y-m-d P" }}</td>
+                        <td>{{ item.status.name|default:"-" }}</td>
+                        <td>{{ item.last_updated|date:"Y-m-d P" }}</td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -60,4 +63,24 @@
             <p class="mb-0">No items found for this query.</p>
         </div>
     {% endif %}
+
+    <script>
+        document.getElementById('print-button').addEventListener('click', function() {
+            // Get the current URL's search parameters (like ?q=pump&status=1)
+            const queryParams = window.location.search;
+            let printUrl = '{% url "item_list" %}';
+
+            // Check if there are existing params
+            if (queryParams) {
+                // Append our print format param with '&'
+                printUrl += queryParams + '&format=print';
+            } else {
+                // Otherwise, append it with '?'
+                printUrl += '?format=print';
+            }
+            
+            // Open the URL in a new window/tab
+            window.open(printUrl, '_blank');
+        });
+    </script>
 {% endblock %}
