@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.contrib.auth import logout
+from unicodedata import category
+
 from .models import BaseItem, LogEntry, Status, RepairLog
 from django.db.models import Q
 from django.utils import timezone
@@ -35,8 +37,10 @@ def item_list(request):
     if query:
         items = items.filter(
             Q(item_id__icontains=query) |
+            Q(category__icontains=query) |
             Q(description__icontains=query) |
             Q(location__icontains=query) |
+            Q(status__name__icontains=query) |
             Q(vendor__icontains=query)
         )
 
@@ -209,11 +213,23 @@ def manage_statuses(request):
         if 'delete_status' in request.POST:
             status_id = request.POST.get('delete_status')
             status_to_delete = get_object_or_404(Status, id=status_id)
-            try:
+
+            # Check if the status is protected
+            if status_to_delete.is_protected:
+                messages.error(request, f"Cannot delete protected status '{status_to_delete.name}'.")
+            else:
+                warehouse_status, created = Status.objects.get_or_create(name="Warehouse")
+
+                # Find all items using the status to be deleted and update them in bulk
+                items_to_reassign = BaseItem.objects.filter(status=status_to_delete)
+                count = items_to_reassign.count()
+                items_to_reassign.update(status=warehouse_status)
+
                 status_to_delete.delete()
-                messages.success(request, f"Status '{status_to_delete.name}' deleted.")
-            except Exception as e:
-                messages.error(request, f"Cannot delete status '{status_to_delete.name}' because it is in use.")
+                messages.success(request,
+                                 f"Status '{status_to_delete.name}' deleted. {count} item(s) reassigned to Warehouse.")
+
+        # Adding a status
         else:
             new_status_name = request.POST.get('name')
             if new_status_name:

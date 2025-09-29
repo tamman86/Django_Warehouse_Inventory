@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 class Status(models.Model):
     name = models.CharField(max_length=100, unique=True)
+    is_protected = models.BooleanField(default=False, help_text="Protected statuses cannot be deleted by users.")
 
     def __str__(self):
         return self.name
@@ -27,7 +28,7 @@ class BaseItem(models.Model):
     vendor = models.CharField(max_length=100, blank=True)
     rating = models.CharField(max_length=50, blank=True)
     location = models.CharField(max_length=100, blank=True)
-    status = models.ForeignKey(Status, on_delete=models.PROTECT, null=True, blank=True)
+    status = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True, blank=True)
     datasheet = models.FileField(upload_to='item_documents/', blank=True, null=True, verbose_name="Datasheet")
     manual = models.FileField(upload_to='item_documents/', blank=True, null=True, verbose_name="Manual")
     document1 = models.FileField(upload_to='item_documents/', blank=True, null=True, verbose_name="Document 1")
