@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.contrib.auth import logout
 from .models import BaseItem, LogEntry, Status, RepairLog
@@ -60,6 +60,7 @@ def item_detail(request, pk):
     return render(request, 'inventory/item_detail.html', context)
 
 @login_required
+@permission_required('inventory.add_baseitem', raise_exception=True)
 def add_item_chooser(request):
     # We get the category choices directly from our BaseItem model
     category_choices = BaseItem.CATEGORY_CHOICES
@@ -69,6 +70,7 @@ def add_item_chooser(request):
     return render(request, 'inventory/add_item_chooser.html', context)
 
 @login_required
+@permission_required('inventory.add_baseitem', raise_exception=True)
 def add_item(request, category):
     category_slug = category.lower().replace(' ', '')
     FormClass = FORM_MAP.get(category_slug)
@@ -104,6 +106,7 @@ def add_item(request, category):
 
 
 @login_required
+@permission_required('inventory.change_baseitem', raise_exception=True)
 def edit_item(request, pk):
     base_item = get_object_or_404(BaseItem, pk=pk)
     category_slug = base_item.category.lower().replace(' ', '')
@@ -165,6 +168,7 @@ def edit_item(request, pk):
     return render(request, 'inventory/edit_item.html', context)
 
 @login_required
+@permission_required('inventory.delete_baseitem', raise_exception=True)
 def delete_item(request, pk):
     item = get_object_or_404(BaseItem, pk=pk)
 
@@ -199,6 +203,7 @@ def logout_view(request):
     return redirect('item_list')
 
 @login_required
+@permission_required('inventory.add_status', raise_exception=True)
 def manage_statuses(request):
     if request.method == 'POST':
         if 'delete_status' in request.POST:
@@ -225,6 +230,7 @@ def manage_statuses(request):
 
 
 @login_required
+@permission_required('inventory.change_repairlog', raise_exception=True)
 def complete_repair(request, pk):
     repair_log = get_object_or_404(RepairLog, pk=pk)
     item = repair_log.item

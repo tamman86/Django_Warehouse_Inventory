@@ -7,8 +7,12 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="mb-0">Item Details: {{ item.item_id }}</h4>
             <div>
-                <a href="{% url 'edit_item' item.pk %}" class="btn btn-secondary btn-sm">Edit</a>
-                <a href="{% url 'delete_item' item.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                {% if perms.inventory.change_baseitem %}
+                    <a href="{% url 'edit_item' item.pk %}" class="btn btn-secondary btn-sm">Edit</a>
+                {% endif %}
+                {% if perms.inventory.delete_baseitem %}
+                    <a href="{% url 'delete_item' item.pk %}" class="btn btn-danger btn-sm">Delete</a>
+                {% endif %}
             </div>
         </div>
         <div class="card-body">
@@ -123,11 +127,13 @@
 
                 {% if repair.is_active %}
                     <hr>
+                    {% if perms.inventory.change_repairlog %}
                     <form action="{% url 'complete_repair' repair.pk %}" method="post" 
                           onsubmit="return confirm('Are you sure you want to mark this repair as complete and return the item to the warehouse?');">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-success">Mark Repair as Complete</button>
                     </form>
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

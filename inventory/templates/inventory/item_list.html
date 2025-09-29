@@ -6,8 +6,12 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1>Warehouse Inventory List</h1>
         <div> 
-            <a href="{% url 'manage_statuses' %}" class="btn btn-secondary">Manage Projects</a>
-            <a href="{% url 'add_item_chooser' %}" class="btn btn-primary">Add New Item</a>
+            {% if perms.inventory.add_status %}
+                <a href="{% url 'manage_statuses' %}" class="btn btn-secondary">Manage Projects</a>
+            {% endif %}
+            {% if perms.inventory.add_baseitem %}
+                <a href="{% url 'add_item_chooser' %}" class="btn btn-primary">Add New Item</a>
+            {% endif %}
         </div>
     </div>
 
