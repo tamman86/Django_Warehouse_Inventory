@@ -6,7 +6,8 @@ class PumpForm(forms.ModelForm):
         model = Pump
         fields = [
             'item_id', 'description', 'vendor', 'rating', 'location', 'status',
-            'speed', 'inlet', 'outlet', 'moc', 'power'
+            'speed', 'inlet', 'outlet', 'moc', 'power',
+            'datasheet', 'manual', 'document1', 'document2', 'document3', 'document4', 'document5'
         ]
         widgets = {
             'category': forms.HiddenInput(),
@@ -17,7 +18,8 @@ class ValveForm(forms.ModelForm):
         model = Valve
         fields = [
             'item_id', 'description', 'vendor', 'rating', 'location', 'status',
-            'moc', 'size', 'valve_type'
+            'moc', 'size', 'valve_type',
+            'datasheet', 'manual', 'document1', 'document2', 'document3', 'document4', 'document5'
         ]
         widgets = {
             'category': forms.HiddenInput(),
@@ -28,7 +30,8 @@ class FilterForm(forms.ModelForm):
         model = Filter
         fields = [
             'item_id', 'description', 'vendor', 'rating', 'location', 'status',
-            'inlet', 'outlet', 'moc', 'filter_type'
+            'inlet', 'outlet', 'moc', 'filter_type',
+            'datasheet', 'manual', 'document1', 'document2', 'document3', 'document4', 'document5'
         ]
         widgets = {
             'category': forms.HiddenInput(),
@@ -39,7 +42,8 @@ class MixTankForm(forms.ModelForm):
         model = MixTank
         fields = [
             'item_id', 'description', 'vendor', 'rating', 'location', 'status',
-            'inlet', 'outlet', 'moc', 'power'
+            'inlet', 'outlet', 'moc', 'power',
+            'datasheet', 'manual', 'document1', 'document2', 'document3', 'document4', 'document5'
         ]
         widgets = {
             'category': forms.HiddenInput(),
@@ -48,7 +52,9 @@ class MixTankForm(forms.ModelForm):
 class CommandCenterForm(forms.ModelForm):
     class Meta:
         model = CommandCenter
-        fields = ['item_id', 'description', 'location', 'status',]
+        fields = ['item_id', 'description', 'location', 'status',
+                  'datasheet', 'manual', 'document1', 'document2', 'document3', 'document4', 'document5'
+        ]
         widgets = {
             'category': forms.HiddenInput(),
         }
@@ -58,13 +64,21 @@ class MiscForm(forms.ModelForm):
         model = Misc
         fields = [
             'item_id', 'description', 'vendor', 'rating', 'location', 'status',
-            'speed', 'inlet', 'outlet', 'moc', 'power', 'quantity'
+            'speed', 'inlet', 'outlet', 'moc', 'power', 'quantity',
+            'datasheet', 'manual', 'document1', 'document2', 'document3', 'document4', 'document5'
         ]
         widgets = {
             'category': forms.HiddenInput(),
         }
 
 class RepairLogForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make these fields not required at the form level
+        self.fields['repair_company'].required = False
+        self.fields['start_date'].required = False
+        self.fields['description'].required = False
+
     class Meta:
         model = RepairLog
         fields = [

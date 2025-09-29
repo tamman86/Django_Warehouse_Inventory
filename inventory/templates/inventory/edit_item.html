@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit {{ item.item_id }}{% endblock %}
+
+{% block content %}
+    <h1>Edit Item: {{ item.item_id }}</h1>
+
+    <form method="post" class="mt-3" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+        {{ form.as_p }}
+
+        <div id="repair-fields" style="display: none;">
+            <hr>
+            <h3>Repair Details</h3>
+            {{ repair_form.non_field_errors }}
+            {{ repair_form.as_p }}
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+        <a href="{% url 'item_detail' item.pk %}" class="btn btn-secondary mt-3">Cancel</a>
+    </form>
+
+    <script>
+        const statusSelect = document.querySelector("#id_status");
+        const repairFieldsDiv = document.querySelector("#repair-fields");
+
+        function toggleRepairFields() {
+            // Check if the statusSelect element exists before proceeding
+            if (statusSelect) {
+                const selectedText = statusSelect.options[statusSelect.selectedIndex].text;
+                
+                if (selectedText === "Repair") {
+                    repairFieldsDiv.style.display = "block";
+                } else {
+                    repairFieldsDiv.style.display = "none";
+                }
+            }
+        }
+
+        // Add event listener only if the statusSelect element exists
+        if (statusSelect) {
+            statusSelect.addEventListener("change", toggleRepairFields);
+        }
+        
+        // Run the function once on page load to set the initial state
+        document.addEventListener("DOMContentLoaded", toggleRepairFields);
+    </script>
+{% endblock %}

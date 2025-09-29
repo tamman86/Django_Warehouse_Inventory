@@ -70,13 +70,14 @@ def add_item_chooser(request):
 
 @login_required
 def add_item(request, category):
-    FormClass = FORM_MAP.get(category.lower().replace(' ', ''))
+    category_slug = category.lower().replace(' ', '')
+    FormClass = FORM_MAP.get(category_slug)
 
     if FormClass is None:
         return redirect('item_list')
 
     if request.method == 'POST':
-        form = FormClass(request.POST)
+        form = FormClass(request.POST, request.FILES)
         if form.is_valid():
             # Create the object in memory
             new_item = form.save(commit=False)

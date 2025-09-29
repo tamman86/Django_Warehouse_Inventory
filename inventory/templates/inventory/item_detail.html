@@ -20,6 +20,18 @@
             <p><strong>Status:</strong> {{ item.status.name|default:"N/A" }}</p>
 
             <hr>
+            <h5>Item Documents</h5>
+            <ul class="list-unstyled ms-3">
+                <li>Datasheet: {% if item.datasheet %}<a href="{{ item.datasheet.url }}" target="_blank">View Document</a>{% else %}No document uploaded.{% endif %}</li>
+                <li>Manual: {% if item.manual %}<a href="{{ item.manual.url }}" target="_blank">View Document</a>{% else %}No document uploaded.{% endif %}</li>
+                <li>Document 1: {% if item.document1 %}<a href="{{ item.document1.url }}" target="_blank">View Document</a>{% else %}No document uploaded.{% endif %}</li>
+                <li>Document 2: {% if item.document2 %}<a href="{{ item.document2.url }}" target="_blank">View Document</a>{% else %}No document uploaded.{% endif %}</li>
+                <li>Document 3: {% if item.document3 %}<a href="{{ item.document3.url }}" target="_blank">View Document</a>{% else %}No document uploaded.{% endif %}</li>
+                <li>Document 4: {% if item.document4 %}<a href="{{ item.document4.url }}" target="_blank">View Document</a>{% else %}No document uploaded.{% endif %}</li>
+                <li>Document 5: {% if item.document5 %}<a href="{{ item.document5.url }}" target="_blank">View Document</a>{% else %}No document uploaded.{% endif %}</li>
+            </ul>
+
+            <hr>
             <h5>Specific Details</h5>
 
             {% if item.category == "Pump" %}
