@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-6%se5+rnkg(a_+2jov#f80*^9762vc*s!bz_245=65=9s2zv=-
 DEBUG = False
 
 ALLOWED_HOSTS = ['path-inventory.onrender.com', 'localhost', '127.0.0.1']
-
+CSRF_TRUSTED_ORIGINS = ['https://path-inventory.onrender.com']
 
 # Application definition
 
